@@ -16,7 +16,7 @@ function get_user($db, $user_id){
     LIMIT 1
   ";
 
-  return fetch_query($db, $sql);
+  fetch_query($db, $sql);
 }
 
 function get_user_by_name($db, $name){
@@ -29,11 +29,11 @@ function get_user_by_name($db, $name){
     FROM
       users
     WHERE
-      name = '{$name}'
+      name = ?
     LIMIT 1
   ";
 
-  return fetch_query($db, $sql);
+  fetch_query($db, $sql);
 }
 
 function login_as($db, $name, $password){
