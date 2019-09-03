@@ -8,4 +8,7 @@ if(is_logined() === true){
   redirect_to(HOME_URL);
 }
 
+var_dump($name);
+var_dump($db);
+var_dump($user);
 include_once '../view/login_view.php';

@@ -20,9 +20,9 @@ function get_user($db, $user_id){
     $stmt = $db->prepare($sql);
     $stmt->bindvalue(1, $user_id, PDO::PARAM_INT);
     $stmt->execute();
-    return $data = $stmt->fetchAll();
-  } catch (PDOException $e) {
-    set_error('データ取得に失敗しました。');
+    return $stmt->fetchAll();
+  }catch(PDOException $e){
+    set_error('データ取得に失敗しました');
   }
   return false;
 }
@@ -45,9 +45,9 @@ function get_user_by_name($db, $name){
     $stmt = $db->prepare($sql);
     $stmt->bindvalue(1, $name, PDO::PARAM_STR);
     $stmt->execute();
-    return $data = $stmt->fetchAll();
-  } catch (PDOException $e) {
-    set_error('データ取得に失敗しました。');
+    return $stmt->fetchAll();
+  }catch(PDOException $e){
+    set_error('データ取得に失敗しました');
   }
   return false;
 }
@@ -128,8 +128,8 @@ function insert_user($db, $name, $password){
     $stmt->bindvalue(1, $name, PDO::PARAM_STR);
     $stmt->bindvalue(2, $password, PDO::PARAM_STR);
     $stmt->execute();
-  } catch (PDOException $e) {
-    set_error('更新に失敗しました。');
+  }catch(PDOException $e){
+    set_error('更新に失敗しました');
   }
   return false;
 }
