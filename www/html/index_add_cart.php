@@ -25,8 +25,9 @@ if(is_valid_csrf_token($token) === true) {
   } else {
     set_error('カートの更新に失敗しました。');
   }
+  redirect_to(HOME_URL);
+
 } else {
   set_error('不正なリクエストです');
 }
-
 redirect_to(HOME_URL);
