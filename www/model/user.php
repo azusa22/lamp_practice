@@ -127,7 +127,7 @@ function insert_user($db, $name, $password){
     $stmt = $db->prepare($sql);
     $stmt->bindvalue(1, $name, PDO::PARAM_STR);
     $stmt->bindvalue(2, $password, PDO::PARAM_STR);
-    $stmt->execute();
+    return $stmt->execute();
   }catch(PDOException $e){
     set_error('更新に失敗しました');
   }

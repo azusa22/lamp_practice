@@ -95,7 +95,7 @@ function insert_cart($db, $item_id, $user_id, $amount = 1){
     $stmt->bindvalue(1, $item_id, PDO::PARAM_INT);
     $stmt->bindvalue(2, $user_id, PDO::PARAM_INT);
     $stmt->bindvalue(3, $amount, PDO::PARAM_INT);
-    $stmt->execute();
+    return $stmt->execute();
   } catch (PDOException $e) {
     set_error('更新に失敗しました。');
   }
@@ -117,7 +117,7 @@ function update_cart_amount($db, $cart_id, $amount){
     $stmt = $db->prepare($sql);
     $stmt->bindvalue(1, $amount, PDO::PARAM_INT);
     $stmt->bindvalue(2, $cart_id, PDO::PARAM_INT);
-    $stmt->execute();
+    return $stmt->execute();
   } catch (PDOException $e) {
     set_error('更新に失敗しました。');
   }
@@ -136,7 +136,7 @@ function delete_cart($db, $cart_id){
   try{
     $stmt = $db->prepare($sql);
     $stmt->bindvalue(1, $cart_id, PDO::PARAM_INT);
-    $stmt->execute();
+    return $stmt->execute();
   } catch (PDOException $e) {
     set_error('更新に失敗しました。');
   }
@@ -171,7 +171,7 @@ function delete_user_carts($db, $user_id){
   try{
     $stmt = $db->prepare($sql);
     $stmt->bindvalue(1, $user_id, PDO::PARAM_INT);
-    $stmt->execute();
+    return $stmt->execute();
   } catch (PDOException $e) {
     set_error('更新に失敗しました。');
   }

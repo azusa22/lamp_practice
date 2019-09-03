@@ -23,7 +23,7 @@ function get_item($db, $item_id){
     $stmt = $db->prepare($sql);
     $stmt->bindvalue(1, $item_id, PDO::PARAM_INT);
     $stmt->execute();
-    return $data = $stmt->fetch();
+    return $stmt->fetch();
   } catch (PDOException $e) {
     set_error('データ取得に失敗しました。');
   }
@@ -100,7 +100,7 @@ function insert_item($db, $name, $price, $stock, $filename, $status){
     $stmt->bindvalue(3, $stock, PDO::PARAM_INT);
     $stmt->bindvalue(4, $filename, PDO::PARAM_STR);
     $stmt->bindvalue(5, $status_value, PDO::PARAM_STR);
-    $stmt->execute();
+    return $stmt->execute();
   } catch (PDOException $e) {
     set_error('更新に失敗しました。');
   }
@@ -122,7 +122,7 @@ function update_item_status($db, $item_id, $status){
     $stmt = $db->prepare($sql);
     $stmt->bindvalue(1, $status, PDO::PARAM_INT);
     $stmt->bindvalue(2, $item_id, PDO::PARAM_INT);
-    $stmt->execute();
+    return $stmt->execute();
   } catch (PDOException $e) {
     set_error('更新に失敗しました。');
   }
@@ -144,7 +144,7 @@ function update_item_stock($db, $item_id, $stock){
     $stmt = $db->prepare($sql);
     $stmt->bindvalue(1, $stock, PDO::PARAM_INT);
     $stmt->bindvalue(2, $item_id, PDO::PARAM_INT);
-    $stmt->execute();
+    return $stmt->execute();
   } catch (PDOException $e) {
     set_error('更新に失敗しました。');
   }
@@ -178,7 +178,7 @@ function delete_item($db, $item_id){
   try{
     $stmt = $db->prepare($sql);
     $stmt->bindvalue(1, $item_id, PDO::PARAM_INT);
-    $stmt->execute();
+    return $stmt->execute();
   } catch (PDOException $e) {
     set_error('更新に失敗しました。');
   }
