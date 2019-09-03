@@ -20,7 +20,7 @@ function get_user($db, $user_id){
     $stmt = $db->prepare($sql);
     $stmt->bindvalue(1, $user_id, PDO::PARAM_INT);
     $stmt->execute();
-    return $stmt->fetchAll();
+    return $stmt->fetch();
   }catch(PDOException $e){
     set_error('データ取得に失敗しました');
   }
@@ -45,7 +45,7 @@ function get_user_by_name($db, $name){
     $stmt = $db->prepare($sql);
     $stmt->bindvalue(1, $name, PDO::PARAM_STR);
     $stmt->execute();
-    return $stmt->fetchAll();
+    return $stmt->fetch();
   }catch(PDOException $e){
     set_error('データ取得に失敗しました');
   }

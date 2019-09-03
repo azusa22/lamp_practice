@@ -16,14 +16,14 @@ function get_item($db, $item_id){
     FROM
       items
     WHERE
-      item_id = {$item_id}
+      item_id = ?
   ";
 
   try{
     $stmt = $db->prepare($sql);
     $stmt->bindvalue(1, $item_id, PDO::PARAM_INT);
     $stmt->execute();
-    return $data = $stmt->fetchAll();
+    return $data = $stmt->fetch();
   } catch (PDOException $e) {
     set_error('データ取得に失敗しました。');
   }

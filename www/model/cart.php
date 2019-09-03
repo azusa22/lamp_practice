@@ -28,7 +28,7 @@ function get_user_carts($db, $user_id){
     $stmt = $db->prepare($sql);
     $stmt->bindvalue(1, $user_id, PDO::PARAM_INT);
     $stmt->execute();
-    return $data = $stmt->fetchAll();
+    return $stmt->fetchAll();
   } catch (PDOException $e) {
     set_error('データ取得に失敗しました。');
   }
@@ -64,12 +64,11 @@ function get_user_cart($db, $user_id, $item_id){
     $stmt->bindvalue(1, $user_id, PDO::PARAM_INT);
     $stmt->bindvalue(2, $item_id, PDO::PARAM_INT);
     $stmt->execute();
-    return $data = $stmt->fetchAll();
+    return $stmt->fetch();
   } catch (PDOException $e) {
     set_error('データ取得に失敗しました。');
   }
   return false;
-
 }
 
 function add_cart($db, $item_id, $user_id) {
