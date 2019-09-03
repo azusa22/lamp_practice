@@ -18,4 +18,5 @@ $user = get_login_user($db);
 
 $items = get_open_items($db);
 
+var_dump($token);
 include_once '../view/index_view.php';
