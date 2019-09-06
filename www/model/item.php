@@ -99,7 +99,7 @@ function insert_item($db, $name, $price, $stock, $filename, $status){
     $stmt->bindvalue(2, $price, PDO::PARAM_INT);
     $stmt->bindvalue(3, $stock, PDO::PARAM_INT);
     $stmt->bindvalue(4, $filename, PDO::PARAM_STR);
-    $stmt->bindvalue(5, $status_value, PDO::PARAM_STR);
+    $stmt->bindvalue(5, $status_value, PDO::PARAM_INT);
     return $stmt->execute();
   } catch (PDOException $e) {
     set_error('更新に失敗しました。');
