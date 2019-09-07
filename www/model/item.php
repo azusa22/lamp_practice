@@ -145,10 +145,12 @@ function delete_item($db, $item_id){
 }
 
 function get_sort_item($db, $page){
+	global $sort_item;
 	if(isset($_GET['sort_item']) === TRUE){
-		if($_GET['sort_item'] === '新着順'){
+		$sort_item = trim($_GET['sort_item']);
+		if($sort_item === '新着順'){
 			return new_data_read($db, $page);
-		}else if($_GET['sort_item'] === '価格の低い順'){
+		}else if($sort_item === '価格の低い順'){
 			return lowprice_data_read($db, $page);
 		}else{
 			return highprice_data_read($db, $page);

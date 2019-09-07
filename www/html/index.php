@@ -6,6 +6,7 @@ require_once '../model/item.php';
 
 session_start();
 
+$sort_item = '';
 $now_page = 1;
 $page = 0;
 $page_num = 1;

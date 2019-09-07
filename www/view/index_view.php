@@ -59,14 +59,14 @@
 				<?php if($now_page !== 1){ ?>
 					<form method="get">
 						<input type="hidden" name="sort" value="sortItem">
-						<input type="hidden" name="sort_item" value="<?php print h($sore_item); ?>">
+						<input type="hidden" name="sort_item" value="<?php print h($sort_item); ?>">
 						<input type="hidden" name="page" value="0">
 						<input class="pagebtn" type="submit" value="1">
 					</form>
 				<?php }else{ ?>
 					<form method="get">
                                                 <input type="hidden" name="sort" value="sortItem">
-                                                <input type="hidden" name="sort_item" value="<?php print h($sore_item); ?>">
+                                                <input type="hidden" name="sort_item" value="<?php print h($sort_item); ?>">
                                                 <input type="hidden" name="page" value="0">
                                                 <input class="now_pagebtn" type="submit" value="1">
                                         </form>
@@ -74,14 +74,14 @@
                                 if($now_page !== 2){ ?>
                                         <form method="get">
                                                 <input type="hidden" name="sort value="sortItem">
-                                                <input type="hidden" name="sort_item" value="<?php print h($sore_item); ?>">
+                                                <input type="hidden" name="sort_item" value="<?php print h($sort_item); ?>">
                                                 <input type="hidden" name="page" value="8">
                                                 <input class="pagebtn" type="submit" value="2">
                                         </form>
                                 <?php }else{ ?>
                                         <form method="get">
                                                 <input type="hidden" name="sort" value="sortItem">
-                                                <input type="hidden" name="sort_item" value="<?php print h($sore_item); ?>">
+                                                <input type="hidden" name="sort_item" value="<?php print h($sort_item); ?>">
                                                 <input type="hidden" name="page" value="8">
                                                 <input class="now_pagebtn" type="submit" value="2">
 					</form>
@@ -89,14 +89,14 @@
 				if($now_page !== 3){ ?>
                                         <form method="get">
                                                 <input type="hidden" name="sort" value="sortItem">
-                                                <input type="hidden" name="sort_item" value="<?php print h($sore_item); ?>">
+                                                <input type="hidden" name="sort_item" value="<?php print h($sort_item); ?>">
                                                 <input type="hidden" name="page" value="16">
                                                 <input class="pagebtn" type="submit" value="3">
                                         </form>
                                 <?php }else{ ?>
                                         <form method="get">
                                                 <input type="hidden" name="sort" value="sortItem">
-                                                <input type="hidden" name="sort_item" value="<?php print h($sore_item); ?>">
+                                                <input type="hidden" name="sort_item" value="<?php print h($sort_item); ?>">
                                                 <input type="hidden" name="page" value="16">
                                                 <input class="now_pagebtn" type="submit" value="3">
                                         </form>
