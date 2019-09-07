@@ -12,11 +12,19 @@ function get_user($db, $user_id){
     FROM
       users
     WHERE
-      user_id = {$user_id}
+      user_id = ?
     LIMIT 1
   ";
 
-  return fetch_query($db, $sql);
+  try{
+    $stmt = $db->prepare($sql);
+    $stmt->bindvalue(1, $user_id, PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetch();
+  }catch(PDOException $e){
+    set_error('データ取得に失敗しました');
+  }
+  return false;
 }
 
 function get_user_by_name($db, $name){
@@ -29,11 +37,19 @@ function get_user_by_name($db, $name){
     FROM
       users
     WHERE
-      name = '{$name}'
+      name = ?
     LIMIT 1
   ";
 
-  return fetch_query($db, $sql);
+  try{
+    $stmt = $db->prepare($sql);
+    $stmt->bindvalue(1, $name, PDO::PARAM_STR);
+    $stmt->execute();
+    return $stmt->fetch();
+  }catch(PDOException $e){
+    set_error('データ取得に失敗しました');
+  }
+  return false;
 }
 
 function login_as($db, $name, $password){
@@ -104,9 +120,17 @@ function insert_user($db, $name, $password){
   $sql = "
     INSERT INTO
       users(name, password)
-    VALUES ('{$name}', '{$password}');
+    VALUES (?, ?);
   ";
 
-  return execute_query($db, $sql);
+  try{
+    $stmt = $db->prepare($sql);
+    $stmt->bindvalue(1, $name, PDO::PARAM_STR);
+    $stmt->bindvalue(2, $password, PDO::PARAM_STR);
+    return $stmt->execute();
+  }catch(PDOException $e){
+    set_error('更新に失敗しました');
+  }
+  return false;
 }
 
