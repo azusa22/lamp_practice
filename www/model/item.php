@@ -22,7 +22,7 @@ function get_item($db, $item_id){
   return fetch_query($db, $sql);
 }
 
-function get_items($db, $is_open = false){
+function get_items($db, $is_open = false, $is_limit = false){
   $sql = '
     SELECT
       item_id, 
@@ -37,9 +37,13 @@ function get_items($db, $is_open = false){
   if($is_open === true){
     $sql .= '
       WHERE status = 1
-		LIMIT 0,8
     ';
   }
+	if($is_limit === true){
+		$sql .= '
+			LIMIT 0, 8
+		';
+	}
 
   return fetch_all_query($db, $sql);
 }
@@ -49,7 +53,11 @@ function get_all_items($db){
 }
 
 function get_open_items($db){
-  return get_items($db, true);
+  return get_items($db, true, false);
+}
+
+function get_limit_items($db){
+	return get_items($db, true, true);
 }
 
 function regist_item($db, $name, $price, $stock, $status, $image){
@@ -144,21 +152,28 @@ function delete_item($db, $item_id){
   return execute_query($db, $sql);
 }
 
-function get_sort_item($db, $page){
+function limit_page_calc($page){
+	for($i = 0; $i < $page; $i++){
+		$limit_page = $i * 8;
+	};
+	return $limit_page;
+}
+
+function get_sort_item($db, $limit_page){
 	global $sort_item;
 	if(isset($_GET['sort_item']) === TRUE){
 		$sort_item = trim($_GET['sort_item']);
 		if($sort_item === '新着順'){
-			return new_data_read($db, $page);
+			return new_data_read($db, $limit_page);
 		}else if($sort_item === '価格の低い順'){
-			return lowprice_data_read($db, $page);
+			return lowprice_data_read($db, $limit_page);
 		}else{
-			return highprice_data_read($db, $page);
+			return highprice_data_read($db, $limit_page);
 		}
 	}
 }
 
-function new_data_read($db, $page){
+function new_data_read($db, $limit_page){
 	$sql = '
 		SELECT
 			item_id,
@@ -179,7 +194,7 @@ function new_data_read($db, $page){
 
 	try{
 		$stmt = $db->prepare($sql);
-		$stmt->bindvalue(1, intval($page), PDO::PARAM_INT);
+		$stmt->bindvalue(1, intval($limit_page), PDO::PARAM_INT);
 		$stmt->execute();
 		return $stmt->fetchAll();
 	}catch(PDOException $e){
@@ -188,7 +203,7 @@ function new_data_read($db, $page){
 	return false;
 }
 
-function lowprice_data_read($db, $page){
+function lowprice_data_read($db, $limit_page){
 	$sql = '
                 SELECT
                         item_id,
@@ -209,7 +224,7 @@ function lowprice_data_read($db, $page){
         
         try{
 		$stmt = $db->prepare($sql);
-		$stmt->bindvalue(1, intval($page), PDO::PARAM_INT);
+		$stmt->bindvalue(1, intval($limit_page), PDO::PARAM_INT);
 		$stmt->execute();
 		return $stmt->fetchAll();
 	}catch(PDOException $e){
@@ -218,7 +233,7 @@ function lowprice_data_read($db, $page){
 	return false; 
 }
 
-function highprice_data_read($db, $page){
+function highprice_data_read($db, $limit_page){
 	$sql = '
                 SELECT
                         item_id,
@@ -239,7 +254,7 @@ function highprice_data_read($db, $page){
         
         try{
 		$stmt = $db->prepare($sql);
-		$stmt->bindvalue(1, intval($page), PDO::PARAM_INT);
+		$stmt->bindvalue(1, intval($limit_page), PDO::PARAM_INT);
 		$stmt->execute();
 		return $stmt->fetchAll();
 	}catch(PDOException $e){
@@ -257,7 +272,7 @@ function page_get_check() {
 	}
 }
 
-function page_item_read($db, $page){
+function page_item_read($db, $limit_page){
 	$sql = '
                 SELECT
                         item_id,
@@ -278,7 +293,7 @@ function page_item_read($db, $page){
 
 	try{
 		$stmt = $db->prepare($sql);
-		$stmt->bindvalue(1, intval($page), PDO::PARAM_INT);
+		$stmt->bindvalue(1, intval($limit_page), PDO::PARAM_INT);
 		$stmt->execute();
 		return $stmt->fetchAll();
 	}catch(PDOException $e){

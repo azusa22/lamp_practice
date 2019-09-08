@@ -13,10 +13,10 @@
   <div class="container">
     <h1>商品一覧</h1>
     <?php include VIEW_PATH . 'templates/messages.php'; ?>
-		<?php if((intval($page) + 8) > $all_amount){ ?>
-			<p>総数<?php print h($all_amount); ?>件中 <?php print h(intval($page) + 1); ?>件 - <?php print h($all_amount); ?>件 表示中</p>
+		<?php if((intval($limit_page) + 8) > $all_amount){ ?>
+			<p>総数<?php print h($all_amount); ?>件中 <?php print h(intval($limit_page) + 1); ?>件 - <?php print h($all_amount); ?>件 表示中</p>
 		<?php }else{ ?>
-			<p>総数<?php print h($all_amount); ?>件中 <?php print h(intval($page) + 1); ?>件 - <?php print h(intval($page) + 8); ?>件 表示中</p>
+			<p>総数<?php print h($all_amount); ?>件中 <?php print h(intval($limit_page) + 1); ?>件 - <?php print h(intval($limit_page) + 8); ?>件 表示中</p>
 		<?php } ?>
     
 	<form method="get">
@@ -55,87 +55,20 @@
         </div>
       <?php } ?>
 			<!--ページボタン-->
-			<?php if($sort === 'sortItem'){ ?>
-				<?php if($now_page !== 1){ ?>
-					<form method="get">
-						<input type="hidden" name="sort" value="sortItem">
-						<input type="hidden" name="sort_item" value="<?php print h($sort_item); ?>">
-						<input type="hidden" name="page" value="0">
-						<input class="pagebtn" type="submit" value="1">
-					</form>
-				<?php }else{ ?>
-					<form method="get">
-                                                <input type="hidden" name="sort" value="sortItem">
-                                                <input type="hidden" name="sort_item" value="<?php print h($sort_item); ?>">
-                                                <input type="hidden" name="page" value="0">
-                                                <input class="now_pagebtn" type="submit" value="1">
-                                        </form>
-				<?php }
-                                if($now_page !== 2){ ?>
-                                        <form method="get">
-                                                <input type="hidden" name="sort value="sortItem">
-                                                <input type="hidden" name="sort_item" value="<?php print h($sort_item); ?>">
-                                                <input type="hidden" name="page" value="8">
-                                                <input class="pagebtn" type="submit" value="2">
-                                        </form>
-                                <?php }else{ ?>
-                                        <form method="get">
-                                                <input type="hidden" name="sort" value="sortItem">
-                                                <input type="hidden" name="sort_item" value="<?php print h($sort_item); ?>">
-                                                <input type="hidden" name="page" value="8">
-                                                <input class="now_pagebtn" type="submit" value="2">
-					</form>
-				<?php }
-				if($now_page !== 3){ ?>
-                                        <form method="get">
-                                                <input type="hidden" name="sort" value="sortItem">
-                                                <input type="hidden" name="sort_item" value="<?php print h($sort_item); ?>">
-                                                <input type="hidden" name="page" value="16">
-                                                <input class="pagebtn" type="submit" value="3">
-                                        </form>
-                                <?php }else{ ?>
-                                        <form method="get">
-                                                <input type="hidden" name="sort" value="sortItem">
-                                                <input type="hidden" name="sort_item" value="<?php print h($sort_item); ?>">
-                                                <input type="hidden" name="page" value="16">
-                                                <input class="now_pagebtn" type="submit" value="3">
-                                        </form>
-                                <?php }
-			}else{ ?>
-				<?php if($now_page !== 1){ ?>
-					<form method="get">
-						<input type="hidden" name="page" value="0">
-						<input class="pagebtn" type="submit" value="1">
-					</form>
-				<?php }else{ ?>
-					<form method="get">
-						<input type="hidden" name="page" value="0">
-						<input class="now_pagebtn" type="submit" value="1">
-					</form>
-				<?php }
-				if($now_page !== 2){ ?>
-                                        <form method="get">
-                                                <input type="hidden" name="page" value="8">
-                                                <input class="pagebtn" type="submit" value="2">
-                                        </form>
-                                <?php }else{ ?>
-                                        <form method="get">
-                                                <input type="hidden" name="page" value="8">
-                                                <input class="now_pagebtn" type="submit" value="2">
-                                        </form>
-                                <?php }
-				if($now_page !== 3){ ?>
-                                        <form method="get">
-                                                <input type="hidden" name="page" value="16">
-                                                <input class="pagebtn" type="submit" value="3">
-                                        </form>
-                                <?php }else{ ?>
-                                        <form method="get">
-                                                <input type="hidden" name="page" value="16">
-                                                <input class="now_pagebtn" type="submit" value="3">
-                                        </form>
-                                <?php }
-			} ?>
+			<?php for($i = 0; $i < $page_num; $i++){ ?> 
+				<form method="get">
+				<?php if($sort === 'sortItem'){ ?>
+					<input type="hidden" name="sort" value="sortItem">
+					<input type="hidden" name="sort_item" value="<?php print h($sort_item); ?>">
+				<?php } ?>
+					<input type="hidden" name="page" value="<?php print h($i + 1); ?>">
+					<?php if($now_page !== $i + 1){ ?>
+					<input class="pagebtn" type="submit" value="<?php print h($i + 1); ?>">
+					<?php }else{ ?>
+					<input class="now_pagebtn" type="submit" value="<?php print h($i + 1); ?>">
+					<?php } ?>
+				</form>
+			<?php } ?>
       </div>
     </div>
   </div>
