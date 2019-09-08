@@ -18,4 +18,5 @@ $carts = get_user_carts($db, $user['user_id']);
 
 $total_price = sum_carts($carts);
 
+var_dump($carts);
 include_once '../view/cart_view.php';

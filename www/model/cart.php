@@ -105,17 +105,86 @@ function purchase_carts($db, $carts){
   if(validate_cart_purchase($carts) === false){
     return false;
   }
-  foreach($carts as $cart){
-    if(update_item_stock(
-        $db, 
-        $cart['item_id'], 
-        $cart['stock'] - $cart['amount']
-      ) === false){
-      set_error($cart['name'] . 'の購入に失敗しました。');
-    }
-  }
-  
-  delete_user_carts($db, $carts[0]['user_id']);
+	$db->beginTransaction();
+	try{
+		foreach($carts as $cart){
+			if(update_item_stock(
+				$db, 
+				$cart['item_id'], 
+				$cart['stock'] - $cart['amount']
+      			) === false){
+				set_error($cart['name'] . 'の購入に失敗しました。');
+			}
+		
+			if(insert_into_history(
+				$db,
+				$cart['user_id']
+			) === false){
+				set_error($cart['name'] . 'の購入に失敗しました。');
+			}
+			if(insert_into_details(
+				$db,
+				$cart['item_id'],
+				$cart['amount']
+			) === false){
+				set_error($cart['name'] . 'の購入に失敗しました。');
+			}
+		}
+		delete_user_carts($db, $carts[0]['user_id']);
+		$db->commit();
+	}catch(PDOException $e){
+		$db->rollback();
+		$set_error('購入できませんでした');
+		throw $e;
+	}
+}
+
+function insert_into_history($db, $user_id){
+	global $last_id;
+	$sql = '
+		INSERT INTO
+			order_historys(
+				user_id,
+				date)
+		VALUE (
+			?,
+			now())
+		';
+	try{
+		$stmt = $db->prepare($sql);
+		$stmt->bindvalue(1, $user_id, PDO::PARAM_INT);
+		$valid = $stmt->execute();
+		$last_id = $db->lastinsertid();
+		return $valid;
+	}catch(PDOException $e){
+		set_error('更新に失敗しました');
+	}
+	return false;
+}
+
+function insert_into_details($db, $item_id, $amount){
+	global $last_id;
+	$sql = '
+		INSERT INTO
+			order_details(
+				order_number,
+				item_id,
+				amount)
+		VALUE (
+			?,
+			?,
+			?)
+	';
+	try{
+		$stmt = $db->prepare($sql);
+		$stmt->bindvalue(1, $last_id, PDO::PARAM_INT);
+		$stmt->bindvalue(2, $item_id, PDO::PARAM_INT);
+		$stmt->bindvalue(3, $amount, PDO::PARAM_INT);
+		return $stmt->execute();
+	}catch(PDOException $e){
+		set_error('更新に失敗しました');
+	}
+	return false;
 }
 
 function delete_user_carts($db, $user_id){
