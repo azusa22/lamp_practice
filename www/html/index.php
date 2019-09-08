@@ -12,6 +12,9 @@ $page = 1;
 $limit_page = 0;
 $page_num = 1;
 
+unset_session('csrf_token');
+$token = get_csrf_token();
+
 if(is_logined() === false){
   redirect_to(LOGIN_URL);
 }
