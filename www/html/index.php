@@ -15,8 +15,14 @@ if(is_logined() === false){
 
 $db = get_db_connect();
 $user = get_login_user($db);
-
 $items = get_open_items($db);
 
-var_dump($token);
+if($_SERVER['REQUEST_METHOD'] === 'GET'){
+	if(isset($_GET['sort']) === TRUE){
+		if($_GET['sort'] === 'sortItem'){
+			$items = get_sort_item($db);
+		}
+	}
+}
+
 include_once '../view/index_view.php';

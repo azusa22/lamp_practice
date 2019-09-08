@@ -13,6 +13,16 @@
   <div class="container">
     <h1>商品一覧</h1>
     <?php include VIEW_PATH . 'templates/messages.php'; ?>
+    
+	<form method="get">
+		<select name="sort_item">
+			<option value="新着順" salected>新着順</option>
+			<option value="価格の低い順">価格の低い順</option>
+			<option value="価格の高い順">価格の高い順</option>
+		</select>
+	<input type="hidden" name="sort" value="sortItem">
+	<input type="submit" value="並び替え">
+	</form>
 
     <div class="card-deck">
       <div class="row">

@@ -185,6 +185,77 @@ function delete_item($db, $item_id){
   return false;
 }
 
+function get_sort_item($db){
+	if(isset($_GET['sort_item']) === TRUE){
+		if($_GET['sort_item'] === '新着順'){
+			return new_data_read($db);
+		}else if($_GET['sort_item'] === '価格の低い順'){
+			return lowprice_data_read($db);
+		}else{
+			return highprice_data_read($db);
+		}
+	}
+}
+
+function new_data_read($db){
+	$sql = '
+		SELECT
+			item_id,
+			name,
+			stock,
+			price,
+			image,
+			status
+		FROM
+			items
+		WHERE
+			status = 1
+		ORDER BY
+			item_id desc
+	';
+
+	return fetch_all_query($db, $sql);
+}
+
+function lowprice_data_read($db){
+	$sql = '
+                SELECT
+                        item_id,
+                        name,
+                        stock,
+                        price,
+                        image,
+                        status
+                FROM    
+                        items
+		WHERE
+			status = 1
+                ORDER BY
+                        price asc
+        ';              
+        
+        return fetch_all_query($db, $sql);
+}
+
+function highprice_data_read($db){
+	$sql = '
+                SELECT
+                        item_id,
+                        name,
+                        stock,
+                        price,
+                        image,
+                        status
+                FROM    
+                        items
+		WHERE
+			status = 1
+                ORDER BY
+                        price desc
+        ';              
+        
+        return fetch_all_query($db, $sql);
+}
 
 // 非DB
 
