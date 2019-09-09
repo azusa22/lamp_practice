@@ -13,6 +13,11 @@
   <div class="container">
     <h1>商品一覧</h1>
     <?php include VIEW_PATH . 'templates/messages.php'; ?>
+		<?php if((intval($limit_page) + 8) > $all_amount){ ?>
+			<p>総数<?php print h($all_amount); ?>件中 <?php print h(intval($limit_page) + 1); ?>件 - <?php print h($all_amount); ?>件 表示中</p>
+		<?php }else{ ?>
+			<p>総数<?php print h($all_amount); ?>件中 <?php print h(intval($limit_page) + 1); ?>件 - <?php print h(intval($limit_page) + 8); ?>件 表示中</p>
+		<?php } ?>
     
 	<form method="get">
 		<select name="sort_item">
@@ -50,6 +55,21 @@
           </div>
         </div>
       <?php } ?>
+			<!--ページボタン-->
+			<?php for($i = 0; $i < $page_num; $i++){ ?> 
+				<form method="get">
+				<?php if($sort === 'sortItem'){ ?>
+					<input type="hidden" name="sort" value="sortItem">
+					<input type="hidden" name="sort_item" value="<?php print h($sort_item); ?>">
+				<?php } ?>
+					<input type="hidden" name="page" value="<?php print h($i + 1); ?>">
+					<?php if($now_page !== $i + 1){ ?>
+					<input class="pagebtn" type="submit" value="<?php print h($i + 1); ?>">
+					<?php }else{ ?>
+					<input class="now_pagebtn" type="submit" value="<?php print h($i + 1); ?>">
+					<?php } ?>
+				</form>
+			<?php } ?>
       </div>
     </div>
   </div>

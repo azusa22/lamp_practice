@@ -30,7 +30,7 @@ function get_item($db, $item_id){
   return false;
 }
 
-function get_items($db, $is_open = false){
+function get_items($db, $is_open = false, $is_limit = false){
   $sql = '
     SELECT
       item_id, 
@@ -47,6 +47,11 @@ function get_items($db, $is_open = false){
       WHERE status = 1
     ';
   }
+	if($is_limit === true){
+		$sql .= '
+			LIMIT 0, 8
+		';
+	}
 
   return fetch_all_query($db, $sql);
 }
@@ -56,7 +61,11 @@ function get_all_items($db){
 }
 
 function get_open_items($db){
-  return get_items($db, true);
+  return get_items($db, true, false);
+}
+
+function get_limit_items($db){
+	return get_items($db, true, true);
 }
 
 function regist_item($db, $name, $price, $stock, $status, $image){
@@ -185,19 +194,28 @@ function delete_item($db, $item_id){
   return false;
 }
 
-function get_sort_item($db){
+function limit_page_calc($page){
+	for($i = 0; $i < $page; $i++){
+		$limit_page = $i * 8;
+	};
+	return $limit_page;
+}
+
+function get_sort_item($db, $limit_page){
+	global $sort_item;
 	if(isset($_GET['sort_item']) === TRUE){
-		if($_GET['sort_item'] === '新着順'){
-			return new_data_read($db);
-		}else if($_GET['sort_item'] === '価格の低い順'){
-			return lowprice_data_read($db);
+		$sort_item = trim($_GET['sort_item']);
+		if($sort_item === '新着順'){
+			return new_data_read($db, $limit_page);
+		}else if($sort_item === '価格の低い順'){
+			return lowprice_data_read($db, $limit_page);
 		}else{
-			return highprice_data_read($db);
+			return highprice_data_read($db, $limit_page);
 		}
 	}
 }
 
-function new_data_read($db){
+function new_data_read($db, $limit_page){
 	$sql = '
 		SELECT
 			item_id,
@@ -212,13 +230,122 @@ function new_data_read($db){
 			status = 1
 		ORDER BY
 			item_id desc
+		LIMIT
+			?, 8
 	';
 
-	return fetch_all_query($db, $sql);
+	try{
+		$stmt = $db->prepare($sql);
+		$stmt->bindvalue(1, intval($limit_page), PDO::PARAM_INT);
+		$stmt->execute();
+		return $stmt->fetchAll();
+	}catch(PDOException $e){
+		set_error('データ取得に失敗しました');
+	}
+	return false;
 }
 
-function lowprice_data_read($db){
+function lowprice_data_read($db, $limit_page){
 	$sql = '
+    SELECT
+      item_id,
+      name,
+      stock,
+      price,
+      image,
+      status
+    FROM    
+      items
+    WHERE
+      status = 1
+    ORDER BY
+      price asc
+    LIMIT
+      ?, 8
+   ';              
+        
+        try{
+		$stmt = $db->prepare($sql);
+		$stmt->bindvalue(1, intval($limit_page), PDO::PARAM_INT);
+		$stmt->execute();
+		return $stmt->fetchAll();
+	}catch(PDOException $e){
+		set_error('データ取得に失敗しました');
+	}
+	return false; 
+}
+
+function highprice_data_read($db, $limit_page){
+	$sql = '
+    SELECT
+      item_id,
+      name,
+      stock,
+      price,
+      image,
+      status
+    FROM    
+      items
+		WHERE
+			status = 1
+    ORDER BY
+      price desc
+		LIMIT
+			?, 8
+        ';              
+        
+        try{
+		$stmt = $db->prepare($sql);
+		$stmt->bindvalue(1, intval($limit_page), PDO::PARAM_INT);
+		$stmt->execute();
+		return $stmt->fetchAll();
+	}catch(PDOException $e){
+		set_error('データ取得に失敗しました');
+	}
+	return false;
+}
+
+function page_get_check() {
+	if(isset($_GET['page']) === TRUE){
+		$page = trim($_GET['page']);
+		return $page;
+	}else{
+		return 0;
+	}
+}
+
+function page_item_read($db, $limit_page){
+	$sql = '
+    SELECT
+      item_id,
+      name,
+      stock,
+      price,
+      image,
+      status
+    FROM
+      items
+    WHERE
+      status = 1
+    ORDER BY
+      item_id asc
+    LIMIT
+      ?, 8
+  ';
+
+	try{
+		$stmt = $db->prepare($sql);
+		$stmt->bindvalue(1, intval($limit_page), PDO::PARAM_INT);
+		$stmt->execute();
+		return $stmt->fetchAll();
+	}catch(PDOException $e){
+		set_error('データ取得に失敗しました');
+	}
+	return false;
+}
+
+function all_item_amount($db){
+		$sql = '
                 SELECT
                         item_id,
                         name,
@@ -226,36 +353,24 @@ function lowprice_data_read($db){
                         price,
                         image,
                         status
-                FROM    
+                FROM
                         items
-		WHERE
-			status = 1
+                WHERE
+                        status = 1
                 ORDER BY
-                        price asc
-        ';              
-        
-        return fetch_all_query($db, $sql);
-}
+                        item_id desc
+        ';
 
-function highprice_data_read($db){
-	$sql = '
-                SELECT
-                        item_id,
-                        name,
-                        stock,
-                        price,
-                        image,
-                        status
-                FROM    
-                        items
-		WHERE
-			status = 1
-                ORDER BY
-                        price desc
-        ';              
-        
-        return fetch_all_query($db, $sql);
+        try{
+                $stmt = $db->prepare($sql);
+                $stmt->execute();
+                return $stmt->fetchAll();
+        }catch(PDOException $e){
+                set_error('データ取得に失敗しました');
+        }
+        return false;
 }
+				
 
 // 非DB
 
