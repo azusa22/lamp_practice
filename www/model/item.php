@@ -247,22 +247,22 @@ function new_data_read($db, $limit_page){
 
 function lowprice_data_read($db, $limit_page){
 	$sql = '
-                SELECT
-                        item_id,
-                        name,
-                        stock,
-                        price,
-                        image,
-                        status
-                FROM    
-                        items
-		WHERE
-			status = 1
-                ORDER BY
-                        price asc
-		LIMIT
-			?, 8
-        ';              
+    SELECT
+      item_id,
+      name,
+      stock,
+      price,
+      image,
+      status
+    FROM    
+      items
+    WHERE
+      status = 1
+    ORDER BY
+      price asc
+    LIMIT
+      ?, 8
+   ';              
         
         try{
 		$stmt = $db->prepare($sql);
@@ -277,19 +277,19 @@ function lowprice_data_read($db, $limit_page){
 
 function highprice_data_read($db, $limit_page){
 	$sql = '
-                SELECT
-                        item_id,
-                        name,
-                        stock,
-                        price,
-                        image,
-                        status
-                FROM    
-                        items
+    SELECT
+      item_id,
+      name,
+      stock,
+      price,
+      image,
+      status
+    FROM    
+      items
 		WHERE
 			status = 1
-                ORDER BY
-                        price desc
+    ORDER BY
+      price desc
 		LIMIT
 			?, 8
         ';              
@@ -316,22 +316,22 @@ function page_get_check() {
 
 function page_item_read($db, $limit_page){
 	$sql = '
-                SELECT
-                        item_id,
-                        name,
-                        stock,
-                        price,
-                        image,
-                        status
-                FROM
-                        items
-                WHERE
-                        status = 1
-                ORDER BY
-                        item_id asc
-                LIMIT
-                        ?, 8
-        ';
+    SELECT
+      item_id,
+      name,
+      stock,
+      price,
+      image,
+      status
+    FROM
+      items
+    WHERE
+      status = 1
+    ORDER BY
+      item_id asc
+    LIMIT
+      ?, 8
+  ';
 
 	try{
 		$stmt = $db->prepare($sql);
