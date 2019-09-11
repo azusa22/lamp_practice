@@ -7,24 +7,33 @@ require_once MODEL_PATH . 'cart.php';
 
 session_start();
 
-if(is_logined() === false){
-  redirect_to(LOGIN_URL);
-}
+$token = get_post('token');
 
-$db = get_db_connect();
-$user = get_login_user($db);
+if(is_valid_csrf_token($token) === true) {
+  if(is_logined() === false){
+    redirect_to(LOGIN_URL);
+  }
 
-$carts = get_user_carts($db, $user['user_id']);
-$total_price = sum_carts($carts);
-try{
-  if(purchase_carts($db, $carts, $total_price) === false){
-    set_error('商品が購入できませんでした。');
+  $db = get_db_connect();
+  $user = get_login_user($db);
+
+  $carts = get_user_carts($db, $user['user_id']);
+  $total_price = sum_carts($carts);
+  try{
+    if(purchase_carts($db, $carts, $total_price) === false){
+      set_error('商品が購入できませんでした。');
+      redirect_to(CART_URL);
+    } 
+  }catch(PDOException $e){
+    set_error('商品が購入できませんでした');
     redirect_to(CART_URL);
-  } 
-}catch(PDOException $e){
-  set_error('商品が購入できませんでした');
-  redirect_to(CART_URL);
-}
-$total_price = sum_carts($carts);
+  }
+  $total_price = sum_carts($carts);
 
-include_once '../view/finish_view.php';
+  include_once '../view/finish_view.php';
+
+} else {
+  set_error('不正なリクエストです');
+}
+redirect_to(CART_URL);
+
