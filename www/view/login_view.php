@@ -3,7 +3,7 @@
 <head>
   <?php include VIEW_PATH . 'templates/head.php'; ?>
   <title>ログイン</title>
-  <link rel="stylesheet" href="<?php print(STYLESHEET_PATH . 'login.css'); ?>">
+  <link rel="stylesheet" href="<?php print h(STYLESHEET_PATH . 'login.css'); ?>">
 </head>
 <body>
   <?php include VIEW_PATH . 'templates/header.php'; ?>
@@ -22,6 +22,7 @@
         <input type="password" name="password" id="password" class="form-control">
       </div>
       <input type="submit" value="ログイン" class="btn btn-primary">
+      <input type="hidden" name="token" value="<?php print h($token); ?>">
     </form>
   </div>
 </body>

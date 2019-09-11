@@ -16,13 +16,21 @@ function get_item($db, $item_id){
     FROM
       items
     WHERE
-      item_id = {$item_id}
+      item_id = ?
   ";
 
-  return fetch_query($db, $sql);
+  try{
+    $stmt = $db->prepare($sql);
+    $stmt->bindvalue(1, $item_id, PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetch();
+  } catch (PDOException $e) {
+    set_error('データ取得に失敗しました。');
+  }
+  return false;
 }
 
-function get_items($db, $is_open = false){
+function get_items($db, $is_open = false, $is_limit = false){
   $sql = '
     SELECT
       item_id, 
@@ -39,6 +47,11 @@ function get_items($db, $is_open = false){
       WHERE status = 1
     ';
   }
+	if($is_limit === true){
+		$sql .= '
+			LIMIT 0, 8
+		';
+	}
 
   return fetch_all_query($db, $sql);
 }
@@ -48,7 +61,11 @@ function get_all_items($db){
 }
 
 function get_open_items($db){
-  return get_items($db, true);
+  return get_items($db, true, false);
+}
+
+function get_limit_items($db){
+	return get_items($db, true, true);
 }
 
 function regist_item($db, $name, $price, $stock, $status, $image){
@@ -82,10 +99,21 @@ function insert_item($db, $name, $price, $stock, $filename, $status){
         image,
         status
       )
-    VALUES('{$name}', {$price}, {$stock}, '{$filename}', {$status_value});
+    VALUES(?, ?, ?, ?, ?);
   ";
 
-  return execute_query($db, $sql);
+  try{
+    $stmt = $db->prepare($sql);
+    $stmt->bindvalue(1, $name, PDO::PARAM_STR);
+    $stmt->bindvalue(2, $price, PDO::PARAM_INT);
+    $stmt->bindvalue(3, $stock, PDO::PARAM_INT);
+    $stmt->bindvalue(4, $filename, PDO::PARAM_STR);
+    $stmt->bindvalue(5, $status_value, PDO::PARAM_INT);
+    return $stmt->execute();
+  } catch (PDOException $e) {
+    set_error('更新に失敗しました。');
+  }
+  return false;
 }
 
 function update_item_status($db, $item_id, $status){
@@ -93,13 +121,21 @@ function update_item_status($db, $item_id, $status){
     UPDATE
       items
     SET
-      status = {$status}
+      status = ?
     WHERE
-      item_id = {$item_id}
+      item_id = ?
     LIMIT 1
   ";
   
-  return execute_query($db, $sql);
+  try{
+    $stmt = $db->prepare($sql);
+    $stmt->bindvalue(1, $status, PDO::PARAM_INT);
+    $stmt->bindvalue(2, $item_id, PDO::PARAM_INT);
+    return $stmt->execute();
+  } catch (PDOException $e) {
+    set_error('更新に失敗しました。');
+  }
+  return false;
 }
 
 function update_item_stock($db, $item_id, $stock){
@@ -107,13 +143,21 @@ function update_item_stock($db, $item_id, $stock){
     UPDATE
       items
     SET
-      stock = {$stock}
+      stock = ?
     WHERE
-      item_id = {$item_id}
+      item_id = ?
     LIMIT 1
   ";
   
-  return execute_query($db, $sql);
+  try{
+    $stmt = $db->prepare($sql);
+    $stmt->bindvalue(1, $stock, PDO::PARAM_INT);
+    $stmt->bindvalue(2, $item_id, PDO::PARAM_INT);
+    return $stmt->execute();
+  } catch (PDOException $e) {
+    set_error('更新に失敗しました。');
+  }
+  return false;
 }
 
 function destroy_item($db, $item_id){
@@ -136,13 +180,197 @@ function delete_item($db, $item_id){
     DELETE FROM
       items
     WHERE
-      item_id = {$item_id}
+      item_id = ?
     LIMIT 1
   ";
   
-  return execute_query($db, $sql);
+  try{
+    $stmt = $db->prepare($sql);
+    $stmt->bindvalue(1, $item_id, PDO::PARAM_INT);
+    return $stmt->execute();
+  } catch (PDOException $e) {
+    set_error('更新に失敗しました。');
+  }
+  return false;
 }
 
+function limit_page_calc($page){
+	for($i = 0; $i < $page; $i++){
+		$limit_page = $i * 8;
+	};
+	return $limit_page;
+}
+
+function get_sort_item($db, $limit_page){
+	global $sort_item;
+	if(isset($_GET['sort_item']) === TRUE){
+		$sort_item = trim($_GET['sort_item']);
+		if($sort_item === '新着順'){
+			return new_data_read($db, $limit_page);
+		}else if($sort_item === '価格の低い順'){
+			return lowprice_data_read($db, $limit_page);
+		}else{
+			return highprice_data_read($db, $limit_page);
+		}
+	}
+}
+
+function new_data_read($db, $limit_page){
+	$sql = '
+		SELECT
+			item_id,
+			name,
+			stock,
+			price,
+			image,
+			status
+		FROM
+			items
+		WHERE
+			status = 1
+		ORDER BY
+			item_id desc
+		LIMIT
+			?, 8
+	';
+
+	try{
+		$stmt = $db->prepare($sql);
+		$stmt->bindvalue(1, intval($limit_page), PDO::PARAM_INT);
+		$stmt->execute();
+		return $stmt->fetchAll();
+	}catch(PDOException $e){
+		set_error('データ取得に失敗しました');
+	}
+	return false;
+}
+
+function lowprice_data_read($db, $limit_page){
+	$sql = '
+    SELECT
+      item_id,
+      name,
+      stock,
+      price,
+      image,
+      status
+    FROM    
+      items
+    WHERE
+      status = 1
+    ORDER BY
+      price asc
+    LIMIT
+      ?, 8
+   ';              
+        
+        try{
+		$stmt = $db->prepare($sql);
+		$stmt->bindvalue(1, intval($limit_page), PDO::PARAM_INT);
+		$stmt->execute();
+		return $stmt->fetchAll();
+	}catch(PDOException $e){
+		set_error('データ取得に失敗しました');
+	}
+	return false; 
+}
+
+function highprice_data_read($db, $limit_page){
+	$sql = '
+    SELECT
+      item_id,
+      name,
+      stock,
+      price,
+      image,
+      status
+    FROM    
+      items
+		WHERE
+			status = 1
+    ORDER BY
+      price desc
+		LIMIT
+			?, 8
+        ';              
+        
+        try{
+		$stmt = $db->prepare($sql);
+		$stmt->bindvalue(1, intval($limit_page), PDO::PARAM_INT);
+		$stmt->execute();
+		return $stmt->fetchAll();
+	}catch(PDOException $e){
+		set_error('データ取得に失敗しました');
+	}
+	return false;
+}
+
+function page_get_check() {
+	if(isset($_GET['page']) === TRUE){
+		$page = trim($_GET['page']);
+		return $page;
+	}else{
+		return 0;
+	}
+}
+
+function page_item_read($db, $limit_page){
+	$sql = '
+    SELECT
+      item_id,
+      name,
+      stock,
+      price,
+      image,
+      status
+    FROM
+      items
+    WHERE
+      status = 1
+    ORDER BY
+      item_id asc
+    LIMIT
+      ?, 8
+  ';
+
+	try{
+		$stmt = $db->prepare($sql);
+		$stmt->bindvalue(1, intval($limit_page), PDO::PARAM_INT);
+		$stmt->execute();
+		return $stmt->fetchAll();
+	}catch(PDOException $e){
+		set_error('データ取得に失敗しました');
+	}
+	return false;
+}
+
+function all_item_amount($db){
+		$sql = '
+                SELECT
+                        item_id,
+                        name,
+                        stock,
+                        price,
+                        image,
+                        status
+                FROM
+                        items
+                WHERE
+                        status = 1
+                ORDER BY
+                        item_id desc
+        ';
+
+        try{
+                $stmt = $db->prepare($sql);
+                $stmt->execute();
+                return $stmt->fetchAll();
+        }catch(PDOException $e){
+                set_error('データ取得に失敗しました');
+        }
+        return false;
+}
+				
 
 // 非DB
 

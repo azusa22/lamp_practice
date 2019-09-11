@@ -138,3 +138,20 @@ function is_valid_upload_image($image){
 function h($str) {
 	return htmlspecialchars($str, ENT_QUOTES, 'utf-8');
 }
+
+function get_csrf_token() {
+	$token = get_random_string(48);
+	set_session('csrf_token', $token);
+	return $token;
+}
+
+function is_valid_csrf_token($token) {
+	if($token === '') {
+		return false;
+	}
+	return $token === get_session('csrf_token');
+}
+
+function unset_session($name) {
+	unset($_SESSION[$name]);
+}

@@ -6,25 +6,32 @@ require_once MODEL_PATH . 'item.php';
 
 session_start();
 
-if(is_logined() === false){
-  redirect_to(LOGIN_URL);
-}
+$token = get_post('token');
 
-$db = get_db_connect();
+if(is_valid_csrf_token($token) === true) {
+  if(is_logined() === false){
+    redirect_to(LOGIN_URL);
+  }
 
-$user = get_login_user($db);
+  $db = get_db_connect();
 
-if(is_admin($user) === false){
-  redirect_to(LOGIN_URL);
-}
+  $user = get_login_user($db);
 
-$item_id = get_post('item_id');
-$stock = get_post('stock');
+  if(is_admin($user) === false){
+    redirect_to(LOGIN_URL);
+  }
 
-if(update_item_stock($db, $item_id, $stock)){
-  set_message('在庫数を変更しました。');
+  $item_id = get_post('item_id');
+  $stock = get_post('stock');
+
+  if(update_item_stock($db, $item_id, $stock)){
+    set_message('在庫数を変更しました。');
+  } else {
+    set_error('在庫数の変更に失敗しました。');
+  }
+  redirect_to(ADMIN_URL);
+ 
 } else {
-  set_error('在庫数の変更に失敗しました。');
+  set_error('不正なリクエストです');
 }
-
 redirect_to(ADMIN_URL);
