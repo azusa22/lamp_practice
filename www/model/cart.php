@@ -127,7 +127,6 @@ function purchase_carts($db, $carts){
     $db->commit();
   }catch(PDOException $e){
     $db->rollback();
-    $set_error('購入できませんでした');
     throw $e;
   }
 }
@@ -150,9 +149,8 @@ function insert_into_historys($db, $user_id){
     $last_id = $db->lastinsertid();
     return $valid;
   }catch(PDOException $e){
-    set_error('更新に失敗しました');
+    throw $e;
   }
-  return false;
 }
 
 function insert_into_details($db, $item_id, $amount){
@@ -175,9 +173,8 @@ function insert_into_details($db, $item_id, $amount){
     $stmt->bindvalue(3, $amount, PDO::PARAM_INT);
     return $stmt->execute();
   }catch(PDOException $e){
-    set_error('更新に失敗しました');
+    throw $e;
   }
-  return false;
 }
 
 function delete_user_carts($db, $user_id){
@@ -185,10 +182,16 @@ function delete_user_carts($db, $user_id){
     DELETE FROM
       carts
     WHERE
-      user_id = {$user_id}
+      user_id = ?
   ";
 
-  execute_query($db, $sql);
+  try{
+    $stmt = $db->prepare($sql);
+    $stmt->bindvalue(1, $user_id, PDO::PARAM_INT);
+    return $stmt->execute();
+  }catch(PDOException $e){
+    throw $e;
+  }
 }
 
 
