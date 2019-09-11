@@ -101,7 +101,7 @@ function delete_cart($db, $cart_id){
   return execute_query($db, $sql);
 }
 
-function purchase_carts($db, $carts){
+function purchase_carts($db, $carts, $total_price){
   if(validate_cart_purchase($carts) === false){
     return false;
   }
@@ -109,7 +109,8 @@ function purchase_carts($db, $carts){
   try{
     insert_into_historys(
       $db,
-      $carts[0]['user_id']
+      $carts[0]['user_id'],
+      $total_price
     );
     foreach($carts as $cart){
       update_item_stock(
@@ -131,20 +132,23 @@ function purchase_carts($db, $carts){
   }
 }
 
-function insert_into_historys($db, $user_id){
+function insert_into_historys($db, $user_id, $price){
   global $last_id;
   $sql = '
     INSERT INTO
       order_historys(
         user_id,
-        date)
+        date,
+        total_price)
     VALUE (
       ?,
-      now())
+      now(),
+      ?)
     ';
   try{
     $stmt = $db->prepare($sql);
     $stmt->bindvalue(1, $user_id, PDO::PARAM_INT);
+    $stmt->bindvalue(2, $price, PDO::PARAM_INT);
     $valid = $stmt->execute();
     $last_id = $db->lastinsertid();
     return $valid;
