@@ -36,4 +36,3 @@ if(is_valid_csrf_token($token) === true) {
   set_error('不正なリクエストです');
 }
 redirect_to(CART_URL);
-
