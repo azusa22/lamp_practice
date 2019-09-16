@@ -23,7 +23,7 @@
         <tr>
           <td><?php print h($history['order_number']); ?></td>
           <td><?php print h($history['date']); ?></td>
-          <td><?php print h(number_format($history['total_price'])); ?></td>
+          <td><?php print h(number_format($total_price)); ?></td>
         </tr>
       </tbody>
     </table>

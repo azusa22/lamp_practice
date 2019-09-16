@@ -17,5 +17,10 @@ $order_number = get_post('order_number');
 
 $history = get_order_history($db, $order_number);
 $details = get_order_details($db, $order_number);
+$details_price = get_details_total_price($db, $order_number);
+$total_price = 0;
+for($i = 0; $i < count($details_price); $i++){
+  $total_price += $details_price[$i]['price'] * $details_price[$i]['amount']; 
+}
 
 include_once '../view/order_details_view.php';

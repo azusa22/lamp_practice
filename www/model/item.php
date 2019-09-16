@@ -146,13 +146,12 @@ function delete_item($db, $item_id){
 function get_order_historys($db, $user_id){
   $sql = '
     SELECT
-      order_number,
-      date,
-      total_price
+      order_historys.order_number,
+      date
     FROM
       order_historys
     WHERE
-      user_id = ?
+      order_historys.user_id = ?
     ';
 
   try{
@@ -165,12 +164,36 @@ function get_order_historys($db, $user_id){
   }
 }
 
+function get_total_price($db, $order_number){
+  $sql = '
+    SELECT
+      amount,
+      price
+    FROM
+      order_details
+    LEFT JOIN
+      items
+    ON
+      order_details.item_id = items.item_id
+    WHERE
+      order_number = ?
+    ';
+
+    try{
+      $stmt = $db->prepare($sql);
+      $stmt->bindvalue(1, $order_number, PDO::PARAM_INT);
+      $stmt->execute();
+      return $stmt->fetchAll();
+    }catch(PDOException $e){
+      set_error('データ取得に失敗しました');
+    }
+}
+
 function get_order_history($db, $order_number){
   $sql = '
     SELECT
       order_number,
-      date,
-      total_price
+      date
     FROM
       order_historys
     WHERE
@@ -185,6 +208,31 @@ function get_order_history($db, $order_number){
   }catch(PDOException $e){
     set_error('データ取得に失敗しました');
   }
+}
+
+function get_details_total_price($db, $order_number){
+  $sql = '
+    SELECT
+      amount,
+      price
+    FROM
+      order_details
+    LEFT JOIN
+      items
+    ON
+      order_details.item_id = items.item_id
+    WHERE
+      order_details.order_number = ?
+    ';
+
+    try{
+      $stmt = $db->prepare($sql);
+      $stmt->bindvalue(1, $order_number, PDO::PARAM_INT);
+      $stmt->execute();
+      return $stmt->fetchAll();
+    }catch (PDOException $e){
+      set_error('データ取得に失敗しました');
+    }
 }
 
 function get_order_details($db, $order_number){
