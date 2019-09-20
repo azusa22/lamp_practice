@@ -21,9 +21,18 @@ function get_user_carts($db, $user_id){
     ON
       carts.item_id = items.item_id
     WHERE
-      carts.user_id = {$user_id}
+      carts.user_id = ?
   ";
-  return fetch_all_query($db, $sql);
+
+  try{
+    $stmt = $db->prepare($sql);
+    $stmt->bindvalue(1, $user_id, PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetchAll();
+  } catch (PDOException $e) {
+    set_error('データ取得に失敗しました。');
+  }
+  return false;
 }
 
 function get_user_cart($db, $user_id, $item_id){
@@ -45,13 +54,21 @@ function get_user_cart($db, $user_id, $item_id){
     ON
       carts.item_id = items.item_id
     WHERE
-      carts.user_id = {$user_id}
+      carts.user_id = ?
     AND
-      items.item_id = {$item_id}
+      items.item_id = ?
   ";
 
-  return fetch_query($db, $sql);
-
+  try{
+    $stmt = $db->prepare($sql);
+    $stmt->bindvalue(1, $user_id, PDO::PARAM_INT);
+    $stmt->bindvalue(2, $item_id, PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetch();
+  } catch (PDOException $e) {
+    set_error('データ取得に失敗しました。');
+  }
+  return false;
 }
 
 function add_cart($db, $item_id, $user_id) {
@@ -70,10 +87,19 @@ function insert_cart($db, $item_id, $user_id, $amount = 1){
         user_id,
         amount
       )
-    VALUES({$item_id}, {$user_id}, {$amount})
+    VALUES(?, ?, ?)
   ";
 
-  return execute_query($db, $sql);
+  try{
+    $stmt = $db->prepare($sql);
+    $stmt->bindvalue(1, $item_id, PDO::PARAM_INT);
+    $stmt->bindvalue(2, $user_id, PDO::PARAM_INT);
+    $stmt->bindvalue(3, $amount, PDO::PARAM_INT);
+    return $stmt->execute();
+  } catch (PDOException $e) {
+    set_error('更新に失敗しました。');
+  }
+  return false;
 }
 
 function update_cart_amount($db, $cart_id, $amount){
@@ -81,12 +107,21 @@ function update_cart_amount($db, $cart_id, $amount){
     UPDATE
       carts
     SET
-      amount = {$amount}
+      amount = ?
     WHERE
-      cart_id = {$cart_id}
+      cart_id = ?
     LIMIT 1
   ";
-  return execute_query($db, $sql);
+
+  try{
+    $stmt = $db->prepare($sql);
+    $stmt->bindvalue(1, $amount, PDO::PARAM_INT);
+    $stmt->bindvalue(2, $cart_id, PDO::PARAM_INT);
+    return $stmt->execute();
+  } catch (PDOException $e) {
+    set_error('更新に失敗しました。');
+  }
+  return false;
 }
 
 function delete_cart($db, $cart_id){
@@ -94,11 +129,18 @@ function delete_cart($db, $cart_id){
     DELETE FROM
       carts
     WHERE
-      cart_id = {$cart_id}
+      cart_id = ?
     LIMIT 1
   ";
 
-  return execute_query($db, $sql);
+  try{
+    $stmt = $db->prepare($sql);
+    $stmt->bindvalue(1, $cart_id, PDO::PARAM_INT);
+    return $stmt->execute();
+  } catch (PDOException $e) {
+    set_error('更新に失敗しました。');
+  }
+  return false;
 }
 
 function purchase_carts($db, $carts, $total_price){
