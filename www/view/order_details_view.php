@@ -23,7 +23,7 @@
         <tr>
           <td><?php print h($history['order_number']); ?></td>
           <td><?php print h($history['date']); ?></td>
-          <td><?php print h(number_format($total_price)); ?></td>
+          <td><?php print h(number_format($total_price)); ?>円</td>
         </tr>
       </tbody>
     </table>
@@ -43,9 +43,9 @@
           <tr>
             <td><img src="<?php print h(IMAGE_PATH . $detail['image']); ?>" class="item_image"></td>
             <td><?php print h($detail['name']); ?></td>
-            <td><?php print h($detail['price']); ?></td>
+            <td><?php print h($detail['price']); ?>円</td>
             <td><?php print h($detail['amount']); ?></td>
-            <td><?php print h(number_format($detail['price'] * $detail['amount'])); ?></td>
+            <td><?php print h(number_format($detail['price'] * $detail['amount'])); ?>円</td>
           </tr>
         <?php } ?>
       </tbody>
