@@ -344,6 +344,111 @@ function page_item_read($db, $limit_page){
 	return false;
 }
 
+function get_order_historys($db, $user_id){
+  $sql = '
+    SELECT
+      order_historys.order_number,
+      date,
+      SUM(amount * price) as total_price
+    FROM
+      order_historys
+    LEFT JOIN
+      order_details
+    ON
+      order_historys.order_number = order_details.order_number
+    LEFT JOIN
+      items
+    ON
+      order_details.item_id = items.item_id
+    WHERE
+      order_historys.user_id = ?
+    GROUP BY
+      order_historys.order_number, date
+    ';
+
+  try{
+    $stmt = $db->prepare($sql);
+    $stmt->bindvalue(1, $user_id, PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetchAll();
+  }catch(PDOException $e){
+    set_error('データ取得に失敗しました');
+  }
+}
+
+function get_order_history($db, $order_number){
+  $sql = '
+    SELECT
+      order_number,
+      date
+    FROM
+      order_historys
+    WHERE
+      order_number = ?
+    ';
+
+  try{
+    $stmt = $db->prepare($sql);
+    $stmt->bindvalue(1, $order_number, PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetch();
+  }catch(PDOException $e){
+    set_error('データ取得に失敗しました');
+  }
+}
+
+function get_details_total_price($db, $order_number){
+  $sql = '
+    SELECT
+      amount,
+      price
+    FROM
+      order_details
+    LEFT JOIN
+      items
+    ON
+      order_details.item_id = items.item_id
+    WHERE
+      order_details.order_number = ?
+    ';
+
+    try{
+      $stmt = $db->prepare($sql);
+      $stmt->bindvalue(1, $order_number, PDO::PARAM_INT);
+      $stmt->execute();
+      return $stmt->fetchAll();
+    }catch (PDOException $e){
+      set_error('データ取得に失敗しました');
+    }
+}
+
+function get_order_details($db, $order_number){
+  $sql = '
+    SELECT
+      image,
+      name,
+      price,
+      amount
+    FROM
+      order_details
+    LEFT JOIN
+      items
+    ON
+      order_details.item_id = items.item_id
+    WHERE
+      order_number = ?
+  ';
+
+  try{
+    $stmt = $db->prepare($sql);
+    $stmt->bindvalue(1, $order_number, PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetchAll();
+  }catch(PDOException $e){
+    set_error('データ取得に失敗しました');
+  }
+}
+
 function all_item_amount($db){
 		$sql = '
                 SELECT
@@ -370,7 +475,6 @@ function all_item_amount($db){
         }
         return false;
 }
-				
 
 // 非DB
 

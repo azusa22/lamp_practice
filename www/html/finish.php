@@ -16,8 +16,8 @@ if(is_valid_csrf_token($token) === true) {
 
   $db = get_db_connect();
   $user = get_login_user($db);
-
 　$carts = get_user_carts($db, $user['user_id']);
+  $total_price = sum_carts($carts);
 　try{
   　if(purchase_carts($db, $carts) === false){
     　set_error('商品が購入できませんでした。');
@@ -27,7 +27,6 @@ if(is_valid_csrf_token($token) === true) {
   　set_error('商品が購入できませんでした');
   　redirect_to(CART_URL);
 　}
-　$total_price = sum_carts($carts);
 
 　include_once '../view/finish_view.php';
 } else {
